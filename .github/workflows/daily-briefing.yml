@@ -1,0 +1,24 @@
+name: Daily Notion Briefing
+
+on:
+  schedule:
+    - cron: '0 22 * * *'  # 한국시간 오전 7시
+  workflow_dispatch:
+
+jobs:
+  briefing:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - run: pip install notion-client google-generativeai
+      - run: python briefing.py
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          EMAIL_TO: ${{ secrets.EMAIL_TO }}
+          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          NOTION_DB_ID: ${{ secrets.NOTION_DB_ID }}
