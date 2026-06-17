@@ -1,12 +1,12 @@
-import os, smtplib, google.generativeai as genai
+import os, smtplib
 from datetime import date
 from notion_client import Client
+from google import genai
 from email.mime.text import MIMEText
 
 # 설정
 notion = Client(auth=os.environ["NOTION_TOKEN"])
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
-gemini = genai.GenerativeModel("gemini-1.5-flash")
+client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 DB_ID = os.environ["NOTION_DB_ID"]
 today = date.today().isoformat()
 
@@ -34,8 +34,9 @@ if not items:
     content = "오늘 마감인 할 일이 없어요! 😊 여유로운 하루 되세요~"
 else:
     task_list = "\n".join(items)
-    result = gemini.generate_content(
-        f"오늘({today}) 노션 할 일 목록이야. 친근하게 간단히 정리해서 아침 브리핑처럼 알려줘:\n{task_list}"
+    result = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=f"오늘({today}) 노션 할 일 목록이야. 친근하게 간단히 정리해서 아침 브리핑처럼 알려줘:\n{task_list}"
     )
     content = result.text
 
